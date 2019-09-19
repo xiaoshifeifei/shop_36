@@ -39,7 +39,25 @@ export const result_api = (params) => {
 
 // 删除单个用户
 export const delete_api = (params) => {
-    console.log(params, 111111);
-
     return axios.delete(`users/${params.id}`)
+}
+
+// 权限管理
+export const rights_api = (params) => {
+    return axios.get(`rights/list`, params)
+}
+export const right_api = (params) => {
+    return axios.get(`rights/tree`, params)
+}
+
+export const roles_api = (params) => {
+    return axios.get('roles', params)
+}
+
+export const dele_api = (params) => {
+        return axios.delete(`roles/${params.roleid}/rights/${params.rightld}`)
+    }
+    // 分配角色管理
+export const rolesssss_api = (a, params) => {
+    return axios.put(`users/${a.id}/role`, { rid: params })
 }

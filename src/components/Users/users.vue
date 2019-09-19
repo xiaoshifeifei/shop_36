@@ -44,7 +44,12 @@
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="del(scope.row.id)">删除</el-button>
             <!-- 分配角色按钮 -->
             <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini">分配权限</el-button>
+              <el-button
+                type="warning"
+                icon="el-icon-setting"
+                size="mini"
+                @click="rolesslist(scope.row)"
+              >分配角色</el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -61,6 +66,23 @@
         :total="total"
       ></el-pagination>
     </el-card>
+    <!-- 分配权限 -->
+    <el-dialog title="分配角色" :visible.sync="partVisible" width="50%">
+      <p>当前的用户：{{userInfo.username}}</p>
+      <p>当前的角色：{{userInfo.role_name}}</p>
+      <p>
+        分配新角色：
+        <el-select v-model="userval" placeholder="请选择">
+          <!-- 不要跟着视屏走，内容都不一样
+          -->
+          <el-option v-for="item in options" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
+        </el-select>
+      </p>
+      <span slot="footer">
+        <el-button @click="partVisible = false">取 消</el-button>
+        <el-button type="primary" @click="rolesxuan">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 添加用户的对话框 -->
     <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" @close="init">
       <!-- 内容主体区 -->
@@ -113,7 +135,9 @@ import {
     addUser_api,
     edit_api,
     result_api,
-    delete_api
+    delete_api,
+    roles_api,
+    rolesssss_api
 } from '@/Api'
 import { longStackSupport } from 'q'
 export default {
@@ -142,13 +166,21 @@ export default {
             cb(new Error('请输入合法的手机号'))
         }
         return {
+            // 点击分配权限每一行的数据
+            userInfo: {},
+            // 渲染下拉菜单
+            options: [],
+            userval: '',
+            // // 下拉框显示于影藏事件
+            // visichange: false,
             // 添加用户表单值
             formLabelAlign: {
                 name: '',
                 region: '',
                 type: ''
             },
-
+            // 分配权限显示与影藏
+            partVisible: false,
             // 添加用户的表单数据
             ruleForm: {
                 username: '',
@@ -246,12 +278,42 @@ export default {
         this.getUserList()
     },
     methods: {
+        // 分配确定
+        async rolesxuan() {
+            // 当我点击的时候我要发送请求，将数据发送过去
+            const { data: res } = await rolesssss_api(
+                this.userInfo,
+                this.userval
+            )
+            if (res.meta.status !== 200) {
+                console.log(res)
+
+                return this.$message.error('失败！')
+            }
+            this.$message.success('分配成功！')
+            this.userval = ''
+            this.getUserList()
+            this.partVisible = false
+        },
+        // 分配权限
+        async rolesslist(userInfo) {
+            this.userInfo = userInfo
+
+            const { data: res } = await roles_api()
+            if (res.meta.status !== 200) return this.$message.error('失败！')
+            this.$message.success('分配成功！')
+            this.options = res.data
+            console.log(this.options)
+
+            this.partVisible = true
+        },
         // 删除单个用户
         async del(idd) {
             const { data: res } = await delete_api({
                 id: idd
             })
-            if (res.meta.status != 200) return this.$message.error('删除失败！')
+            if (res.meta.status !== 200)
+                return this.$message.error('删除失败！')
             this.$message.success('删除成功！')
             this.getUserList()
         },
@@ -260,9 +322,12 @@ export default {
             this.$refs.ruleFormRef.validate(async ress => {
                 const { data: res } = await addUser_api(this.ruleForm)
                 if (res.meta.status != 201)
-                    return this.$message.error('添加用户失败！')
+                    return (
+                        this.$message.error('添加用户失败！'),
+                        (this.addDialogVisible = true)
+                    )
                 this.$message.success('添加用户成功！')
-                this.addDialogVisible = true
+                this.addDialogVisible = false
                 this.getUserList()
             })
         },
@@ -273,7 +338,7 @@ export default {
                 email: this.alterForm.email,
                 mobile: this.alterForm.mobile
             })
-            console.log(res)
+            // console.log(res)
             if (res.meta.status != 200)
                 return this.$message.error('修改用户失败！')
             this.$message.success('修改用户成功！')
@@ -337,6 +402,7 @@ export default {
                 this.$message.success('登录成功')
             }
         }
+        // 分配角色确定
     }
 }
 </script>

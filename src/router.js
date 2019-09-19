@@ -4,6 +4,10 @@ import Login from './components/Login.vue'
 import Home from './components/Home.vue'
 import Welcome from './components/Welcome.vue'
 import Users from './components/Users/users.vue'
+import Rights from './components/power/rights.vue'
+import Roles from './components/power/roles.vue'
+
+
 
 Vue.use(Router)
 
@@ -17,7 +21,9 @@ const router = new Router({
             redirect: '/welcome',
             children: [
                 { path: '/welcome', component: Welcome },
-                { path: '/users', component: Users }
+                { path: '/users', component: Users },
+                { path: '/rights', component: Rights },
+                { path: '/roles', component: Roles }
             ]
         }
     ]
@@ -30,7 +36,7 @@ router.beforeEach((to, from, next) => {
     //next 是一个函数 ，表示放行
     if (to.path === '/login') return next()
         // 获取token
-    const tokenStr = window.sessionStorage.getItem('token');
+    const tokenStr = window.sessionStorage.getItem('token')
     if (!tokenStr) return next('/login')
     next()
 

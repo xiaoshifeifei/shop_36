@@ -59,7 +59,7 @@ export default {
                 '102': 'iconfont icon-danju',
                 '145': 'iconfont icon-baobiao'
             },
-            iscollapse: true
+            iscollapse: false
         }
     },
     created() {
