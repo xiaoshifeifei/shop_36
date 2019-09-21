@@ -59,5 +59,14 @@ export const dele_api = (params) => {
     }
     // 分配角色管理
 export const rolesssss_api = (a, params) => {
-    return axios.put(`users/${a.id}/role`, { rid: params })
+        return axios.put(`users/${a.id}/role`, { rid: params })
+    }
+    //商品分类数据
+export const cat_api = (params) => {
+    return axios.get('categories', params)
+}
+
+//添加分类
+export const catadd_api = (params) => {
+    return axios.post('categories', params)
 }
